@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlyFlat ROI Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 18px;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        input[type="number"], input[type="range"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        input[type="range"] {
+            padding: 0;
+            height: 8px;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .range-value {
+            text-align: right;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .results-section {
+            margin-top: 40px;
+        }
+
+        .total-roi {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .total-roi h2 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .total-value {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .roi-percent {
+            font-size: 24px;
+            font-weight: 600;
+            opacity: 0.95;
+        }
+
+        .roi-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .pillar-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .pillar-card h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .pillar-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .pillar-detail {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .cost-breakdown {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+
+        .cost-breakdown h3 {
+            font-size: 16px;
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .cost-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .cost-label {
+            color: #666;
+        }
+
+        .cost-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .cost-total {
+            border-top: 2px solid #ffc107;
+            padding-top: 10px;
+            margin-top: 10px;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .cta-button {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: transform 0.2s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .methodology {
+            margin-top: 40px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .methodology h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculate Your FlyFlat ROI</h1>
+        <p class="subtitle">See how much time and money FlyFlat saves executives like you</p>
+
+        <div class="input-section">
+            <div class="input-group">
+                <label for="compensation">Annual Compensation</label>
+                <input type="number" id="compensation" value="750000" min="250000" max="5000000" step="50000">
+                <div class="range-value">$<span id="comp-display">750,000</span></div>
+            </div>
+
+            <div class="input-group">
+                <label for="trips">Business Trips Per Year</label>
+                <input type="range" id="trips" value="15" min="5" max="50" step="1">
+                <div class="range-value"><span id="trips-display">15</span> trips</div>
+            </div>
+
+            <div class="input-group">
+                <label for="hourly-rate">Your Time is Worth (Hourly)</label>
+                <input type="number" id="hourly-rate" value="360" min="120" max="2500" step="10">
+                <div class="range-value">$<span id="rate-display">360</span>/hour</div>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="total-roi">
+                <h2>Your Annual Value from FlyFlat</h2>
+                <div class="total-value" id="total-value">$137,688</div>
+                <div class="roi-percent">
+                    Net Benefit: <span id="net-benefit">$107,688</span>
+                    (<span id="roi-percent">359</span>% ROI)
+                </div>
+            </div>
+
+            <div class="roi-breakdown">
+                <div class="pillar-card">
+                    <h3>Decision Load Reduction</h3>
+                    <div class="pillar-value" id="pillar1-value">$91,080</div>
+                    <div class="pillar-detail">
+                        <strong>253 hours</strong> of mental bandwidth preserved<br>
+                        1,900 travel decisions eliminated annually
+                    </div>
+                </div>
+
+                <div class="pillar-card">
+                    <h3>Proactive Interventions</h3>
+                    <div class="pillar-value" id="pillar2-value">$40,800</div>
+                    <div class="pillar-detail">
+                        <strong id="interventions-count">120</strong> crises resolved before you notice<br>
+                        $340 average savings per intervention
+                    </div>
+                </div>
+
+                <div class="pillar-card">
+                    <h3>Context Preservation</h3>
+                    <div class="pillar-value" id="pillar3-value">$74,520</div>
+                    <div class="pillar-detail">
+                        <strong id="focus-hours">207</strong> hours of protected focus time<br>
+                        One WhatsApp thread vs 40+ interruptions per trip
+                    </div>
+                </div>
+            </div>
+
+            <div class="cost-breakdown">
+                <h3>Investment Summary</h3>
+                <div class="cost-row">
+                    <span class="cost-label">Decision Load Value</span>
+                    <span class="cost-value" id="cost-pillar1">$91,080</span>
+                </div>
+                <div class="cost-row">
+                    <span class="cost-label">Proactive Intervention Savings</span>
+                    <span class="cost-value" id="cost-pillar2">$40,800</span>
+                </div>
+                <div class="cost-row">
+                    <span class="cost-label">Context Preservation Value</span>
+                    <span class="cost-value" id="cost-pillar3">$74,520</span>
+                </div>
+                <div class="cost-row cost-total">
+                    <span class="cost-label">Total Annual Value</span>
+                    <span class="cost-value" id="cost-total">$137,688</span>
+                </div>
+                <div class="cost-row">
+                    <span class="cost-label">FlyFlat Annual Cost</span>
+                    <span class="cost-value">-$30,000</span>
+                </div>
+                <div class="cost-row cost-total" style="color: #28a745;">
+                    <span class="cost-label">Your Net Annual Benefit</span>
+                    <span class="cost-value" id="cost-net">$107,688</span>
+                </div>
+            </div>
+
+            <button class="cta-button" onclick="bookDemo()">Schedule a Demo</button>
+
+            <div class="methodology">
+                <h4>Calculation Methodology</h4>
+                <p>
+                    <strong>Decision Load Reduction:</strong> Based on 1,900 travel decisions eliminated annually (158/month),
+                    with each decision requiring 8 minutes of cognitive effort = 253 hours preserved × your hourly rate.
+                </p>
+                <p style="margin-top: 10px;">
+                    <strong>Proactive Interventions:</strong> FlyFlat averages 8 proactive interventions per trip
+                    (flight changes, hotel upgrades, route optimizations) with $340 average savings per intervention.
+                </p>
+                <p style="margin-top: 10px;">
+                    <strong>Context Preservation:</strong> Based on 13.8 hours of protected focus time per trip
+                    (traditional travel creates 40+ interruptions vs FlyFlat's 3-5 WhatsApp messages) × your hourly rate.
+                </p>
+                <p style="margin-top: 10px;">
+                    All calculations based on research from Columbia University (decision fatigue),
+                    UC Irvine (context switching), and Harvard Business Review (interruption costs).
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constants
+        const FLYFLAT_COST = 30000;
+        const DECISIONS_PER_YEAR = 1900;
+        const HOURS_SAVED_DECISIONS = 253;
+        const INTERVENTIONS_PER_TRIP = 8;
+        const SAVINGS_PER_INTERVENTION = 340;
+        const FOCUS_HOURS_PER_TRIP = 13.8;
+
+        // Get elements
+        const compInput = document.getElementById('compensation');
+        const tripsInput = document.getElementById('trips');
+        const rateInput = document.getElementById('hourly-rate');
+
+        // Display elements
+        const compDisplay = document.getElementById('comp-display');
+        const tripsDisplay = document.getElementById('trips-display');
+        const rateDisplay = document.getElementById('rate-display');
+
+        // Format number with commas
+        function formatNumber(num) {
+            return num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+        }
+
+        // Format currency
+        function formatCurrency(num) {
+            return '$' + formatNumber(num);
+        }
+
+        // Calculate hourly rate from compensation
+        function calculateHourlyRate(compensation) {
+            // Assume 2,080 working hours per year (40 hrs/week × 52 weeks)
+            return Math.round(compensation / 2080);
+        }
+
+        // Calculate all ROI metrics
+        function calculateROI() {
+            const compensation = parseInt(compInput.value);
+            const trips = parseInt(tripsInput.value);
+            const hourlyRate = parseInt(rateInput.value);
+
+            // Pillar 1: Decision Load Reduction
+            const decisionLoadValue = HOURS_SAVED_DECISIONS * hourlyRate;
+
+            // Pillar 2: Proactive Interventions
+            const interventionsSavings = trips * INTERVENTIONS_PER_TRIP * SAVINGS_PER_INTERVENTION;
+            const totalInterventions = trips * INTERVENTIONS_PER_TRIP;
+
+            // Pillar 3: Context Preservation
+            const focusHoursAnnual = trips * FOCUS_HOURS_PER_TRIP;
+            const contextPreservationValue = focusHoursAnnual * hourlyRate;
+
+            // Total calculations
+            const totalValue = decisionLoadValue + interventionsSavings + contextPreservationValue;
+            const netBenefit = totalValue - FLYFLAT_COST;
+            const roiPercent = ((netBenefit / FLYFLAT_COST) * 100).toFixed(0);
+
+            // Update displays
+            document.getElementById('total-value').textContent = formatCurrency(totalValue);
+            document.getElementById('net-benefit').textContent = formatCurrency(netBenefit);
+            document.getElementById('roi-percent').textContent = formatNumber(roiPercent);
+
+            document.getElementById('pillar1-value').textContent = formatCurrency(decisionLoadValue);
+            document.getElementById('pillar2-value').textContent = formatCurrency(interventionsSavings);
+            document.getElementById('pillar3-value').textContent = formatCurrency(contextPreservationValue);
+
+            document.getElementById('interventions-count').textContent = formatNumber(totalInterventions);
+            document.getElementById('focus-hours').textContent = formatNumber(Math.round(focusHoursAnnual));
+
+            document.getElementById('cost-pillar1').textContent = formatCurrency(decisionLoadValue);
+            document.getElementById('cost-pillar2').textContent = formatCurrency(interventionsSavings);
+            document.getElementById('cost-pillar3').textContent = formatCurrency(contextPreservationValue);
+            document.getElementById('cost-total').textContent = formatCurrency(totalValue);
+            document.getElementById('cost-net').textContent = formatCurrency(netBenefit);
+        }
+
+        // Update compensation display
+        compInput.addEventListener('input', function() {
+            compDisplay.textContent = formatNumber(this.value);
+            const newRate = calculateHourlyRate(parseInt(this.value));
+            rateInput.value = newRate;
+            rateDisplay.textContent = formatNumber(newRate);
+            calculateROI();
+        });
+
+        // Update trips display
+        tripsInput.addEventListener('input', function() {
+            tripsDisplay.textContent = this.value;
+            calculateROI();
+        });
+
+        // Update rate display
+        rateInput.addEventListener('input', function() {
+            rateDisplay.textContent = formatNumber(this.value);
+            calculateROI();
+        });
+
+        // Book demo function
+        function bookDemo() {
+            // Replace with actual booking link
+            window.location.href = 'https://calendly.com/flyflat/demo';
+        }
+
+        // Initial calculation
+        calculateROI();
+    </script>
+</body>
+</html>
